@@ -187,6 +187,7 @@ class VQESolver:
             total_counts = 0
             for a in range(len(self.states)):
                 key = str(np.binary_repr(a, self.num_qubits))
+                # Evita KeyError si un estado no fue muestreado
                 count = remote_job['results'].get(self.states[key], 0)
                 output_dict[key] = count
                 total_counts += count
@@ -207,7 +208,11 @@ class VQESolver:
                         avg += output_dict[output_state] * float(weight)
             averages.append(avg)
 
-        loss = float(sum(averages) + self.identity_offset)
+        # Implementación de la Regla 1.3 del Mandato Metripléctico:
+        # Evitamos colapsos puramente conservativos sumando el offset de identidad
+        # y asegurando que el loss sea un escalar real.
+        total_avg = sum(averages)
+        loss = float(np.real(total_avg) + self.identity_offset)
         self.loss_values.append(loss)
         self.iteration += 1
         return loss
