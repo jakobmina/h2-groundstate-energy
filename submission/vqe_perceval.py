@@ -46,7 +46,7 @@ class VQESolver:
         self.num_qubits      = 2
 
         # ── H7 Metriplectic State ─────────────────────────────────────
-        self.learning_rate   = 0.05
+        self.learning_rate   = 0.03
         self.covariance      = np.eye(12)
         self.base_epsilon    = 1e-4
         self.target_energy   = -1.137        # referencia H₂ STO-3G
@@ -223,11 +223,12 @@ class VQESolver:
             output_dict  = {}
             total_counts = 0
             
-            # Recuperamos el ResultMap (comportamiento similar a dict)
+            # Recuperamos los resultados (compatible con ResultMap y exqalibur.BSCount)
             results_map = remote_job['results']
             
             for bit_label, state_obj in self.states.items():
-                count = results_map.get(state_obj, 0)
+                # Usamos acceso por llave y comprobación de membresía porque BSCount no tiene .get()
+                count = results_map[state_obj] if state_obj in results_map else 0
                 output_dict[bit_label] = count
                 total_counts += count
 
@@ -259,7 +260,7 @@ class VQESolver:
 
     # ── Optimizador Metripléxico H7 ───────────────────────────────────
 
-    def optimize(self, max_iter=50):
+    def optimize(self, max_iter=100):
         """
         Bucle metripléxico H7.
 
@@ -276,7 +277,7 @@ class VQESolver:
             self.set_hamiltonian()
 
         rng   = np.random.default_rng()
-        theta = self.attractor + rng.uniform(-0.1, 0.1, 12)
+        theta = self.attractor + rng.uniform(-0.05, 0.05, 12)
 
         best_energy = np.inf
         best_theta  = theta.copy()
