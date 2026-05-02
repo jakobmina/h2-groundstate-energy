@@ -1,0 +1,30 @@
+[project]
+name = "submission"
+version = "0.1.0"
+requires-python = ">=3.8"
+
+dependencies = [
+  'pennylane >= 0.35.1, < 1.0.0',
+  'xyz-parse >= 0.1.3, < 1.0.0',
+  'numpy >= 1.22.0',
+  'perceval-quandela >= 0.10.5, < 1.0.0; platform_system == "Linux" or platform_system == "Darwin"',
+  'openfermion >= 1.6.1, < 2.0.0; platform_system == "Linux" or platform_system == "Darwin"',
+  'openfermionpyscf >= 0.5, < 1.0.0; platform_system == "Linux" or platform_system == "Darwin"',
+]
+
+[build-system]
+requires = ["uv", "setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+[tool.setuptools.package-data]
+submission = ["*"]
+
+[tool.aqora]
+type = "submission"
+competition = "h2-groundstate-energy"
+
+[tool.aqora.refs]
+groundstate_energy = { path = "submission.start_here", notebook = true }
+# groundstate_energy = { path = "submission.perceval", notebook = true }
